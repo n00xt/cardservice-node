@@ -1,0 +1,14 @@
+{
+  "name": "cardservice",
+  "version": "1.0.0",
+  "main": "app.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "restify": "^8.6.0",
+    "restify-cors-middleware": "^1.1.1",
+    "serialport": "^9.2.4"
+  }
+}
