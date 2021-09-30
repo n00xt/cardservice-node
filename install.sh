@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo systemctl stop kiosk.service && sudo systemctl stop kiosk.service
+sudo systemctl stop kiosk.service && sudo systemctl disable kiosk.service
 sudo rm /lib/systemd/system/kiosk.service
 sudo apt update && sudo apt upgrade -y
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
@@ -12,6 +12,10 @@ cd /home/pi/cardservice/ && yarn install
 
 mv /home/pi/cardservice/kiosk.service /lib/systemd/system/kiosk.service
 chmod +x /home/pi/cardservice/kiosk.sh
+
+sudo daemon-reload
+sudo systemctl start kiosk.service && sudo systemctl enable kiosk.service
+
 
 sed -i 's/"orphan_rows_removed":true/"credit_card_enabled":false,"orphan_rows_removed":true,"profile_enabled":false/' /home/pi/.config/chromium/Default/Preferences
 
