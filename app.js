@@ -1,4 +1,5 @@
 const SerialPort = require('serialport')
+const Delimiter = require('@serialport/parser-delimiter')
 const restify = require('restify')
 const corsMiddleware = require('restify-cors-middleware')
 const server = restify.createServer()
@@ -27,35 +28,31 @@ server.get('/entry-point/test', function (req, res, next) {
 })
 
 setInterval(function () {
+  console.log(readedCards)
   if (readedCards.length > 0) {
     readedCards.shift()
   }
 },20000)
 
-SerialPort.list().then(ports => {
-  ports.filter(port => {
-    if (port.manufacturer === 'Prolific') {
-      const comPort = new SerialPort(port.path).setEncoding('hex')
-      readCard(comPort)
-    }
-  })
-}).catch(error => console.log('Chyba pri hľadaní čítačky kariet !'))
+function hex2a(hexx) {
+  const hex = hexx.toString();//force conversion
+  let str = '';
+  for (let i = 0; i < hex.length; i += 2)
+    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+  return str;
+}
 
+const comPort = new SerialPort('/dev/ttyUSB0').setEncoding('hex')
+readParser(comPort)
 
-function readCard (comPort) {
+function readParser (comPort) {
   let tmpData = ''
-  comPort.on('data', function (data) {
-    if(!disabledHex.includes(data)){
-      tmpData += String.fromCharCode(parseInt(data,16))
-      if (tmpData.length === 10) {
-        cardNo = tmpData.substr(2,tmpData.length)
-        tmpData = ''
-      }
-    }
+  const parser = comPort.pipe(new Delimiter({ delimiter: '1b' }))
+  parser.on('data', function (data) {
+    cardNo = hex2a(data).substr(3,8)
   })
 }
 
 server.listen(8088, function () {
   console.log('%s listening at %s', server.name, server.url)
 })
-
