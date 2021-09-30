@@ -10,10 +10,10 @@ sudo apt update
 sudo apt install -y yarn sed
 cd /home/pi/cardservice/ && yarn install
 
-mv /home/pi/cardservice/kiosk.service /lib/systemd/system/kiosk.service
+sudo mv /home/pi/cardservice/kiosk.service /lib/systemd/system/kiosk.service
 chmod +x /home/pi/cardservice/kiosk.sh
 
-sudo daemon-reload
+#sudo daemon-reload
 sudo systemctl start kiosk.service && sudo systemctl enable kiosk.service
 
 
@@ -26,6 +26,9 @@ sed -i 's/"data_reduction"/"credentials_enable_autosignin":false,"credentials_en
 mkdir logs
 touch ./logs/cronlog
 chmod +x /home/pi/cardservice/update.sh
+
+sudo /bin/bash -c 'echo "0 0 * * 0 /sbin/shutdown -r now" >> /etc/crontab'
+sudo /bin/bash -c 'echo "30 1 * * 0 sh /home/pi/cardservice/update.sh 2>/home/pi/logs/cronlog" >> /etc/crontab'
 
 #sudo crontab -e
 #0 0 * * 0 /sbin/shutdown -r now
