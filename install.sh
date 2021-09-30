@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo systemctl stop kiosk.service && sudo systemctl stop kiosk.service
+sudo rm /lib/systemd/system/kiosk.service
 sudo apt update && sudo apt upgrade -y
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
